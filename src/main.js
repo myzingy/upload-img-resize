@@ -2,8 +2,9 @@
 (function() {
   function UpImgSize(){
       var that=this;
-      this.maxWidth=800;
-      this.maxHeight=800;
+      this.maxWidth=2000;
+      this.maxHeight=2000;
+      this.quality=0.75;       //压缩质量
       this.resizeStatus=-1;    //压缩状态 -1/0/1 未开始/压缩中/压缩完成
       this.resizeSTime=0;       //压缩开始时间
       this.resizeETime=0;       //压缩结束时间
@@ -11,29 +12,40 @@
       this.reader.onload=function (event){that.readerOnload(event)};
       this.canvas = document.createElement('canvas');  
   };
+  UpImgSize.prototype.ebind=function(el,event,callback){
+    if(window.addEventListener){
+      el.addEventListener(event,callback,false);
+    }else if(window.attachEvent){
+      el.attachEvent('on'+event,callback);
+    }else{
+      eval('el.on'+event+'=callback;');
+    }
+  }
   UpImgSize.prototype.init=function(fileElement,callback){
       var that=this;
       this.fileElement=fileElement;
       this.callback=callback;
-      this.fileElement.addEventListener('change',function(){
+      this.ebind(this.fileElement,'change',function(){
         var file=that.fileElement.files[0];
+        if(!file) return;
         that.filename=file.name;
         that.reader.readAsDataURL(file);
       },false);
   };
   UpImgSize.prototype.readerOnload=function(event){
     var that=this;
+    this.naturalSize=(event.total/1024).toFixed(2);
     this.resizeStatus=0;
     this.resizeTime=new Date().getTime();
     this.img = document.createElement("img");
     this.img.src = event.target.result;
-    this.img.onload=function(e){
+    this.ebind(this.img,'load',function(e){
         that.naturalWidth=e.path[0].naturalWidth;
         that.naturalHeight=e.path[0].naturalHeight;
         that.handle();
         that.reSize();
         that.reSizeComplete();
-    }
+    });
   }
   UpImgSize.prototype.handle=function(){
     var pw=this.maxWidth-this.naturalWidth;
@@ -61,8 +73,9 @@
   }
   UpImgSize.prototype.reSizeComplete=function(){
     var that=this;
-    var result=this.canvas.toDataURL();
+    var result=this.canvas.toDataURL('image/jpeg', this.quality);
     var file=this.dataURLtoFile(result,this.filename);
+    this.handleSize=(file.size/1024).toFixed(2);
     if(this.callback)
       this.callback({canvas:this.canvas,file:file});
   }
@@ -85,12 +98,35 @@
     this.UpImgSize = UpImgSize;
   }
 })();
-
+if(window.addEventListener){
+    window.addEventListener('error', function (e) {
+        var stack = e.error.stack;
+        var message = e.error.toString();
+        if (stack) {
+            message += '<br>' + stack;
+        }
+        document.getElementById('info').innerHTML=message;
+    });
+}else if(window.attachEvent){
+    window.attachEvent('onerror', function (e) {
+        var stack = e.error.stack;
+        var message = e.error.toString();
+        if (stack) {
+            message += '<br>' + stack;
+        }
+        document.getElementById('info').innerHTML=message;
+    });
+}else{
+    window.onerror = function($1,$2,$3){
+        document.getElementById('info').innerHTML=$1+'<br>'+$2+'<br>'+$3;
+    }
+}
 //Example 
 var uis=new module.exports;
 window.onload=function(){
   var fileElement=document.getElementById('file');
-  uis.init(fileElement,function(res){
-    document.body.appendChild(res.canvas);
-  });
+    uis.init(fileElement,function(res){
+      document.getElementById('info').innerHTML='<p>原图：'+uis.naturalWidth+'x'+uis.naturalHeight+','+uis.naturalSize+'KB</p><p>压缩后：'+uis.handleWidth+'x'+uis.handleHeight+','+uis.handleSize+'KB</p>';
+      document.body.appendChild(res.canvas);
+    });
 };
