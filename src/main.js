@@ -98,30 +98,10 @@
     this.UpImgSize = UpImgSize;
   }
 })();
-if(window.addEventListener){
-    window.addEventListener('error', function (e) {
-        var stack = e.error.stack;
-        var message = e.error.toString();
-        if (stack) {
-            message += '<br>' + stack;
-        }
-        document.getElementById('info').innerHTML=message;
-    });
-}else if(window.attachEvent){
-    window.attachEvent('onerror', function (e) {
-        var stack = e.error.stack;
-        var message = e.error.toString();
-        if (stack) {
-            message += '<br>' + stack;
-        }
-        document.getElementById('info').innerHTML=message;
-    });
-}else{
-    window.onerror = function($1,$2,$3){
-        document.getElementById('info').innerHTML=$1+'<br>'+$2+'<br>'+$3;
-    }
-}
 //Example 
+window.onerror = function($1,$2,$3){
+    document.getElementById('info').innerHTML=$1+'<br>'+$2+'<br>'+$3;
+}
 var uis=new module.exports;
 window.onload=function(){
   var fileElement=document.getElementById('file');
