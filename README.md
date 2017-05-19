@@ -1,6 +1,6 @@
 # up-resize-img
 
-> A Vue.js project
+> 上传图片前进行图片等比压缩处理
 
 ## Build Setup
 
@@ -14,5 +14,14 @@ npm run dev
 # build for production with minification
 npm run build
 ```
+#只在pc版chrome下测试过
 
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
+//Example 
+var uis=new module.exports;
+window.onload=function(){
+  var fileElement=document.getElementById('file');//文件组件id
+  uis.init(fileElement,function(res){
+    //压缩后的结果 res {canvas,file};canvas用于展示,file用于上传（请自行添加到formdata）
+    document.body.appendChild(res.canvas);
+  });
+};
