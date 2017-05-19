@@ -14,9 +14,13 @@ npm run dev
 # build for production with minification
 npm run build
 ```
-#只在pc版chrome下测试过
+## 测试过
 
-//Example 
+> 只在 pc 版 chrome 下测试过
+
+## Example 
+
+```javascript
 var uis=new module.exports;
 window.onload=function(){
   var fileElement=document.getElementById('file');//文件组件id
@@ -25,3 +29,4 @@ window.onload=function(){
     document.body.appendChild(res.canvas);
   });
 };
+```
