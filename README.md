@@ -1,6 +1,8 @@
 # up-resize-img
 
 > 上传图片前进行图片等比压缩处理
+## 演示地址
+> https://myzingy.github.io/upload-img-resize/index.html
 
 ## Build Setup
 
